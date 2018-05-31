@@ -2,22 +2,23 @@ from collections import OrderedDict
 from csv import DictReader
 from functools import reduce
 import re
+import sys
 from typing import Dict, List, Mapping, Union
 import unittest
 
-RESULTS_PATH = "sample_results.csv"
+SAMPLE_RESULTS_PATH = "sample_results.csv"
 SEGMENTS = ["Swim", "T1", "Bike", "T2", "Run"]
 TOTAL_KEY = "Gun"
 
 
-def load_and_format_results(path: str=RESULTS_PATH) -> List[Dict[str, Union[int, str]]]:
+def load_and_format_results(path: str=SAMPLE_RESULTS_PATH) -> List[Dict[str, Union[int, str]]]:
     unformatted_results = load_results(path)
     parsed_results = [get_segment_times(result) for result in unformatted_results]
     patched_results = estimate_missing_results_values(parsed_results)
     return patched_results
 
 
-def load_results(path: str=RESULTS_PATH) -> List[Dict[str, str]]:
+def load_results(path: str=SAMPLE_RESULTS_PATH) -> List[Dict[str, str]]:
     with open(path, "r") as csvfile:
         reader = DictReader(csvfile)
         rows = [dict(row) for row in reader]
@@ -98,4 +99,8 @@ class Tests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    results = load_and_format_results()
+    if len(sys.argv) > 1:
+        filepath = sys.argv[1]
+    else:
+        filepath = SAMPLE_RESULTS_PATH
+    results = load_and_format_results(filepath)
